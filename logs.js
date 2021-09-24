@@ -2,17 +2,17 @@ const { config } = require('./config')
 
 function writeError(message) {
   let nDate = new Date().toLocaleString('es-AR', {
-      timeZone: config.timeZone
+    timeZone: config.timeZone
   });
   console.log(nDate + " | " + message);       
   
   try {
-      axios.post(config.errorWebhook, {
-          username: 'ERROR',
-          content: message
-      })
+    axios.post(config.errorWebhook, {
+      username: 'ERROR',
+      content: message
+    })
   } catch(err){
-      console.error(err)
+    console.error(err)
   }
 }
 
