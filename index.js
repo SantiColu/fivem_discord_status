@@ -1,25 +1,29 @@
 const axios = require('axios');
+const bot = require('./bot')
 const { config } = require('./config')
 const { writeLog, writeError } = require('./logs')
 let lastHeartBeat = Date.now();
 
-setInterval(askForHB, config.TimeBetweenHeartbeats);
+setInterval(askForHB, config.timeBetweenHeartbeats);
 
 function askForHB(){
-  if(parseInt((Date.now() - lastHeartBeat)/1000) > 120){
+  if(parseInt((Date.now() - lastHeartBeat)/1000) > 12){
     lastHeartBeat = null;
     writeError("`requestError:` **SERVIDOR NO RESPONDE**");
-    bot.updateMessage(false);
+    bot.updateMessages(false);
   }
 
-  axios.get(`http://${config.ip}:${config.port}/players.json`)
+  axios({
+    method: 'get',
+    timeout: 2000,
+    url: `http://${config.ip}:${config.port}/players.json`
+  })
   .then((response) =>{
     lastHeartBeat = Date.now();
     if(!response.data) return writeLog('`requestError:` no data received');
-    
-    bot.updateMessage(true, response.data)
+    bot.updateMessages(true, response.data)
   })
   .catch((error) =>{
-    writeError('`requestError:`'+error)
+    writeError('`requestError:`\n'+error+'\n\n')
   })
 }
